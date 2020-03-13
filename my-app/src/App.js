@@ -21,7 +21,7 @@ function App() {
 
 
   useEffect(() => {
-    async function loadProjects() {
+    async function loadProjetos() {
       const response = await api.get('/projetos', configAuth);
       setProjetos(response.data);
     }
