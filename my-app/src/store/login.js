@@ -1,0 +1,2 @@
+// Nessa store serão armazenados os dados referentes ao estado do login do usuário, como as variáveis auth e o token de autenticação.
+// Terá apenas uma action, que é a responsável por fazer login e salvar a resposta do banco de dados em um estado apropriado.
