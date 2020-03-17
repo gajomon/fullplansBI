@@ -39,9 +39,9 @@ let dataExemplo = [
 // funcao pra setar o intervalo (mes ou ano) -> ESTADO DE OPCAO.
 // funcao pra plotar o grafico.
 function ProjCadastrados({ props }) {
-    const [opcaoInputRadio, setOpcaoInputRadio] = useState('');
-    const [dataEncontrada, setDataEncontrada] = useState({});
-    const [opcaoSelect, setOpcaoSelect] = useState("Todos os anos");
+    const [opcaoInputRadio1, setOpcaoInputRadio1] = useState('');
+    const [dataEncontrada1, setDataEncontrada1] = useState({});
+    const [opcaoSelect1, setOpcaoSelect1] = useState("Todos os anos");
 
     /*  // Código para lidar com os dados do banco de dados quando o sistema estiver
         // em atuação real.
@@ -59,7 +59,6 @@ function ProjCadastrados({ props }) {
     }
     */
 
-
     // Esse Hook é responsável por definir os dados que serão mostrados no gráfico
     // plotado com o ChartJS
     useEffect(() => {
@@ -72,7 +71,7 @@ function ProjCadastrados({ props }) {
                 indice,
                 aux;
 
-            if (opcaoInputRadio === 'mes') {
+            if (opcaoInputRadio1 === 'mes') {
                 // Incializa as propriedades de objPlot com os valores
                 // necessários.
                 for (aux = 0; aux < 12; aux++) {
@@ -80,7 +79,7 @@ function ProjCadastrados({ props }) {
                     objPlot.y.push(0);
                 }
 
-                if (opcaoSelect === 'Todos os anos') {
+                if (opcaoSelect1 === 'Todos os anos') {
                     dataExemplo.map(data => {
                         indice = (data.createdAt.getMonth());
                         objPlot.y[indice]++;
@@ -88,14 +87,14 @@ function ProjCadastrados({ props }) {
                     });
                 } else {
                     dataExemplo.map(data => {
-                        if (Number(data.createdAt.getFullYear()) === Number(opcaoSelect)) {
+                        if (Number(data.createdAt.getFullYear()) === Number(opcaoSelect1)) {
                             indice = (data.createdAt.getMonth());
                             objPlot.y[indice]++;
                         }
                         return null;
                     });
                 }
-            } else if (opcaoInputRadio === 'ano') {
+            } else if (opcaoInputRadio1 === 'ano') {
                 var anoAtual = new Date(Date.now()).getFullYear();
                 for (aux = -4; aux <= 0; aux++) {
                     objPlot.x.push(anoAtual + aux);
@@ -125,38 +124,38 @@ function ProjCadastrados({ props }) {
                     return undefined;
                 });
             }
-            setDataEncontrada(objPlot);
+            setDataEncontrada1(objPlot);
         }
 
         defineDataEncontrada();
     // Esse Hook deve ser chamado sempre que o valor selecionado pelo usuário do período
     // de tempo for alterado (mês ou ano), e quando estando selecionado o mês, o usuário
     // mudar o ano que deseja visualizar os dados.
-    }, [opcaoInputRadio, opcaoSelect]);
+    }, [opcaoInputRadio1, opcaoSelect1, props]);
 
 
     const chartContainer = useRef(null);
-    const [chartInstance, setChartInstance] = useState(null);
+    const [chartInstance1, setChartInstance1] = useState(null);
     // Define a configuração do gráfico que irá mostrar os dados.
     // Nesse Hook é usado o conteúdo de um outro Hook chamado useRef. O useRef guarda em
     // sua propriedade .current uma referência para o elemento do DOM que tem a propriedade
     // ref. Desta forma, ele substitui o document.getElementById('') que faz a mesma coisa.
     useEffect(() => {
         let textTitle;
-        if (opcaoInputRadio === 'mes') {
-            textTitle = `Filtro: ${opcaoInputRadio}, ano: ${opcaoSelect}`;
+        if (opcaoInputRadio1 === 'mes') {
+            textTitle = `Filtro: ${opcaoInputRadio1}, ano: ${opcaoSelect1}`;
         } else {
-            textTitle = `Filtro: ${opcaoInputRadio}`;
+            textTitle = `Filtro: ${opcaoInputRadio1}`;
         }
 
         let chartConfig = {
             type: 'bar',
             data: {
-                labels: dataEncontrada.x,
+                labels: dataEncontrada1.x,
                 datasets: [{
                     label: 'Quantidade de projetos cadastrados',
                     backgroundColor: 'rgb(24, 57, 190)',
-                    data: dataEncontrada.y
+                    data: dataEncontrada1.y
                 }]
             },
             options: {
@@ -174,13 +173,13 @@ function ProjCadastrados({ props }) {
             }
         }
 
-        if (chartContainer && chartContainer.current) {
-            if (chartInstance) chartInstance.destroy();
-            const newChartInstance = new Chartjs(chartContainer.current, chartConfig);
-            setChartInstance(newChartInstance);
+        if (document.getElementById('ProjCadastradosCanvas')) {
+            if (chartInstance1) chartInstance1.destroy();
+            const newChartInstance = new Chartjs(document.getElementById('ProjCadastradosCanvas').getContext('2d'), chartConfig);
+            setChartInstance1(newChartInstance);
         }
     // eslint-disable-next-line
-    }, [chartContainer, dataEncontrada]);
+    }, [chartContainer, dataEncontrada1]);
 
 
     // setOpcaoDeAnos()
@@ -189,7 +188,7 @@ function ProjCadastrados({ props }) {
     // com base no conjunto de dados do banco de dados.
     useEffect(() => {
         function setOpcaoDeAnos() {
-            let tagSelect = document.getElementById('anoQueSeraMostrado'),
+            let tagSelect = document.getElementById('anoQueSeraMostradoProjCadastrados1'),
                 anoEncontrado = [],
                 anoAtual, 
                 anoRepetido = false;
@@ -223,34 +222,34 @@ function ProjCadastrados({ props }) {
     // Essa função lida com a opção que foi escolhida na tag <select> pelo usuário.
     function handleSelectOption(e) {
         let id = e.target.selectedIndex;
-        setOpcaoSelect(e.target[id].text);
+        setOpcaoSelect1(e.target[id].text);
     }
     
 
-    return(
+    return (
         <div id="ProjCadastrados" >
-            <h2 className="ProjCadastrados">Quantidade de projetos cadastrados</h2>
+            <h3 className="ProjCadastrados">Quantidade de projetos cadastrados</h3>
             <input 
                 type="radio" 
-                id="mes" 
-                name="periodo" 
-                value="mes"
-                onClick={() => {setOpcaoInputRadio('mes')}} />
-            <label htmlFor="mes">Mês</label>
+                id="mes1" 
+                className="mes1"
+                value="mes1"
+                onClick={() => {setOpcaoInputRadio1('mes')}} />
+            <label htmlFor="mes1">Mês</label>
             <div className="selectTag">
-                <select id="anoQueSeraMostrado" onChange={handleSelectOption}>
+                <select id="anoQueSeraMostradoProjCadastrados1" onChange={handleSelectOption}>
                     <option value="Todos os anos">Todos os anos</option>
                 </select>
             </div>
             <input 
                 type="radio" 
-                id="ano" 
-                name="periodo" 
-                value="ano"
-                onClick={() => {setOpcaoInputRadio('ano')}} />
-            <label htmlFor="ano">Ano</label>
+                id="ano1" 
+                className="ano1"
+                value="ano1"
+                onClick={() => {setOpcaoInputRadio1('ano')}} />
+            <label htmlFor="ano1">Ano</label>
             <div className="plot1">
-                <canvas ref={chartContainer} />
+                <canvas ref={chartContainer} id="ProjCadastradosCanvas" />
             </div>
         </div>
     )
