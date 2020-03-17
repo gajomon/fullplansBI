@@ -1,0 +1,40 @@
+div.login {
+    width: 500px;
+    margin: 25px auto;
+    padding: 20px 0;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    border-right: 4px solid #aaa;
+    border-bottom: 4px solid #aaa;
+}
+
+div.login form fieldset legend {
+    text-align: center;
+    padding-bottom: 0;
+    font-weight: bold;
+    font-size: 35px;
+}
+
+div.login form fieldset hr {
+    width: 80%;
+    background-color: #ccc;
+    margin-bottom: 10px;
+}
+
+div.login form fieldset div.form-group {
+    margin: 20px;
+}
+
+div.login form fieldset div.form-group label {
+    font-size: 16px;
+    font-weight: 550;
+}
+
+div.login form fieldset div.button-css {
+    text-align: center;
+}
+
+div.login form fieldset div.button-css button {
+    width: 60%;
+    margin: 15px 0;
+}

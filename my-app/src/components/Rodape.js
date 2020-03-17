@@ -3,7 +3,7 @@ import React from 'react';
 function Rodape() {
     return(
         <footer>
-            Full Plans BI
+            Full Plans BI footer
         </footer>
     )
 }
