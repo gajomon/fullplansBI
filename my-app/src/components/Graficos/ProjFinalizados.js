@@ -179,7 +179,7 @@ function ProjFinalizados({ props }) {
                 labels: dadosParaMostrar.x,
                 datasets: [{
                     label: 'Quantidade de projetos finalizados',
-                    backgroundColor: 'rgb(134, 57, 23)',
+                    backgroundColor: 'rgb(51, 134, 23)',
                     data: dadosParaMostrar.y
                 }]
             },
