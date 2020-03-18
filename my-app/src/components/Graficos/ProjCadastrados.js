@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Chartjs from 'chart.js';
 
 import './ProjCadastrados.css';
@@ -45,6 +45,8 @@ function ProjCadastrados({ props }) {
 
     /*  // Código para lidar com os dados do banco de dados quando o sistema estiver
         // em atuação real.
+        // Quando for colocar em implementação, deve-re retirar a variável dataExemplo,
+        // e alterar para o valor de props.
     function handleDateMongoDB(date) {
         let d1 = new Date(String(date));
         return {createdAt: d1};
@@ -59,8 +61,12 @@ function ProjCadastrados({ props }) {
     }
     */
 
+
+    // defineDataEncontrada()
+    //
     // Esse Hook é responsável por definir os dados que serão mostrados no gráfico
-    // plotado com o ChartJS
+    // plotado com o ChartJS.
+    // Ele faz suas instruções e salva o resultado na variável de estado dataEncontrada1.
     useEffect(() => {
         // new Date(ano, mês, dia) -> Sintaxe para criar uma data
         function defineDataEncontrada() {
@@ -72,8 +78,7 @@ function ProjCadastrados({ props }) {
                 aux;
 
             if (opcaoInputRadio1 === 'mes') {
-                // Incializa as propriedades de objPlot com os valores
-                // necessários.
+                // Incializa as propriedades de objPlot com os valores necessários.
                 for (aux = 0; aux < 12; aux++) {
                     objPlot.x.push(aux+1);
                     objPlot.y.push(0);
@@ -82,7 +87,7 @@ function ProjCadastrados({ props }) {
                 if (opcaoSelect1 === 'Todos os anos') {
                     dataExemplo.map(data => {
                         indice = (data.createdAt.getMonth());
-                        objPlot.y[indice]++;
+                        objPlot.y[indice]++; // Incrementa o valor salvo na posição do mês
                         return null;
                     });
                 } else {
@@ -130,22 +135,25 @@ function ProjCadastrados({ props }) {
         defineDataEncontrada();
     // Esse Hook deve ser chamado sempre que o valor selecionado pelo usuário do período
     // de tempo for alterado (mês ou ano), e quando estando selecionado o mês, o usuário
-    // mudar o ano que deseja visualizar os dados.
+    // mudar o ano que deseja visualizar os dados. Além disso, caso haja uma alteração
+    // na propriedade passada para essa função, ela deve ser re-executada também.
     }, [opcaoInputRadio1, opcaoSelect1, props]);
 
 
-    const chartContainer = useRef(null);
     const [chartInstance1, setChartInstance1] = useState(null);
-    // Define a configuração do gráfico que irá mostrar os dados.
-    // Nesse Hook é usado o conteúdo de um outro Hook chamado useRef. O useRef guarda em
-    // sua propriedade .current uma referência para o elemento do DOM que tem a propriedade
-    // ref. Desta forma, ele substitui o document.getElementById('') que faz a mesma coisa.
+    // Define a configuração do gráfico que irá mostrar os dados e plota-o no canvas.
     useEffect(() => {
-        let textTitle;
+        let textTitle,
+            labelStringValueX;
         if (opcaoInputRadio1 === 'mes') {
-            textTitle = `Filtro: ${opcaoInputRadio1}, ano: ${opcaoSelect1}`;
+            textTitle = `Filtro: Mês. Ano: ${opcaoSelect1}`;
+            labelStringValueX = 'Mês';
+        } else if((opcaoInputRadio1 === 'ano')) {
+            textTitle = `Filtro: Ano`;
+            labelStringValueX = 'Ano';
         } else {
-            textTitle = `Filtro: ${opcaoInputRadio1}`;
+            textTitle = '';
+            labelStringValueX = '';
         }
 
         let chartConfig = {
@@ -168,6 +176,13 @@ function ProjCadastrados({ props }) {
                         ticks: {
                             beginAtZero:true
                         }
+                    }],
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: labelStringValueX
+                        }
                     }]
                 }
             }
@@ -178,17 +193,18 @@ function ProjCadastrados({ props }) {
             const newChartInstance = new Chartjs(document.getElementById('ProjCadastradosCanvas').getContext('2d'), chartConfig);
             setChartInstance1(newChartInstance);
         }
+    // Essa função será re-renderizada sempre que o conjunto de dados encontrado mudar.
     // eslint-disable-next-line
-    }, [chartContainer, dataEncontrada1]);
+    }, [dataEncontrada1]);
 
 
     // setOpcaoDeAnos()
     //
-    // Essa função determina quais possibilidades de anos que serão mostradas para o usuário
-    // com base no conjunto de dados do banco de dados.
+    // Essa função determina quais possibilidades de anos que serão mostradas na tag select
+    // para o usuário com base no conjunto de dados do banco de dados.
     useEffect(() => {
         function setOpcaoDeAnos() {
-            let tagSelect = document.getElementById('anoQueSeraMostradoProjCadastrados1'),
+            let tagSelect = document.getElementById('anoQueSeraMostradoProjCadastrados'),
                 anoEncontrado = [],
                 anoAtual, 
                 anoRepetido = false;
@@ -204,10 +220,10 @@ function ProjCadastrados({ props }) {
                 }
                 if (!anoRepetido) {
                     anoEncontrado.push(anoAtual);
-                    anoEncontrado = anoEncontrado.sort();   
                 }
                 return undefined;
             });
+            anoEncontrado = anoEncontrado.sort(); 
             anoEncontrado.reverse().map(ano => {
                 tagSelect.innerHTML += `<option value=${ano}>${ano}</option>`;
                 return null;
@@ -220,36 +236,48 @@ function ProjCadastrados({ props }) {
 
 
     // Essa função lida com a opção que foi escolhida na tag <select> pelo usuário.
+    // Ela detecta essa escolha do usuário e salva na variável de estado opcaoSelect1.
     function handleSelectOption(e) {
         let id = e.target.selectedIndex;
+        //console.log(e.target[id].text); // Pega o valor do innerHTML do select selecionado.
         setOpcaoSelect1(e.target[id].text);
     }
     
 
     return (
         <div id="ProjCadastrados" >
-            <h3 className="ProjCadastrados">Quantidade de projetos cadastrados</h3>
-            <input 
-                type="radio" 
-                id="mes1" 
-                className="mes1"
-                value="mes1"
-                onClick={() => {setOpcaoInputRadio1('mes')}} />
-            <label htmlFor="mes1">Mês</label>
-            <div className="selectTag">
-                <select id="anoQueSeraMostradoProjCadastrados1" onChange={handleSelectOption}>
-                    <option value="Todos os anos">Todos os anos</option>
-                </select>
-            </div>
-            <input 
-                type="radio" 
-                id="ano1" 
-                className="ano1"
-                value="ano1"
-                onClick={() => {setOpcaoInputRadio1('ano')}} />
-            <label htmlFor="ano1">Ano</label>
-            <div className="plot1">
-                <canvas ref={chartContainer} id="ProjCadastradosCanvas" />
+            <h3 className="ProjCadastrados">Projetos cadastrados</h3>
+            <div className="grid-container">
+                <nav>
+                    <h4 className="nav-title">Menu</h4>
+                    <div className="option-box">
+                        <input 
+                            type="radio" 
+                            id="mes1" 
+                            name="ProjCadastrados"
+                            value="mes1"
+                            onClick={() => {setOpcaoInputRadio1('mes')}} />
+                        <label htmlFor="mes1">Mês</label>
+
+                        <select id="anoQueSeraMostradoProjCadastrados" onChange={handleSelectOption}>
+                            <option value="Todos os anos">Todos os anos</option>
+                        </select>
+                    </div>
+                    
+                    <div className="option-box">
+                        <input 
+                            type="radio" 
+                            id="ano1" 
+                            name="ProjCadastrados"
+                            value="ano1"
+                            onClick={() => {setOpcaoInputRadio1('ano')}} />
+                        <label htmlFor="ano1">Ano</label>
+                    </div>
+                </nav>
+            
+                <div className="plot1">
+                    <canvas id="ProjCadastradosCanvas" />
+                </div>
             </div>
         </div>
     )

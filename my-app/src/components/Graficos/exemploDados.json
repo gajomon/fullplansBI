@@ -3,30 +3,78 @@
         "arquivado": true,
         "createdAt": 1563505200000,
         "infoProjetos": [
-            {
+            {   
+                "dataInicio": 1563505200000,
+                "dataFinal": 1583636400000,
                 "projetistaDesenho": "João José"
             },
-            {
+            {   
+                "dataInicio": 1563505200000,
+                "dataFinal": 1583636400000,
                 "projetistaDesenho": "Maria Maria"
             },
-            {
+            {   
+                "dataInicio": 1563505200000,
+                "dataFinal": 1583636400000,
                 "projetistaDesenho": "Lucas Jucá"
             },
-            {
+            {   
+                "dataInicio": 1563505200000,
+                "dataFinal": 1583636400000,
                 "projetistaDesenho": "Pedro Paulo"
             }
-        ]
+        ],
+        "dataArquivado": 1583636400000
     },
     {   
         "arquivado": true,
         "createdAt": 1497841200000,
         "infoProjetos": [
-            {
+            {   
+                "dataInicio": 1563505200000,
+                "dataFinal": 1583636400000,
                 "projetistaDesenho": "João José"
             },
-            {
+            {   
+                "dataInicio": 1563505200000,
+                "dataFinal": 1583636400000,
                 "projetistaDesenho": "Joana Maria"
             }
-        ]
+        ],
+        "dataArquivado": 1583636400000
+    },
+    {   
+        "arquivado": false,
+        "createdAt": 1497841200000,
+        "infoProjetos": [
+            {   
+                "dataInicio": 1563505200000,
+                "dataFinal": 1583636400000,
+                "projetistaDesenho": "Joaquim Ronaldo"
+            },
+            {   
+                "dataInicio": 1563505200000,
+                "dataFinal": 1549072800000,
+                "projetistaDesenho": "Joana Maria"
+            }
+        ],
+        "dataArquivado": 1549072800000
+    },
+    {   
+        "arquivado": true,
+        "createdAt": 1497841200000,
+        "infoProjetos": [
+            {   
+                "dataInicio": 1563505200000,
+                "dataFinal": 1583636400000,
+                "projetistaDesenho": "Joaquim Ronaldo"
+            },
+            {   
+                "dataInicio": 1563505200000,
+                "dataFinal": 1549072800000,
+                "projetistaDesenho": "Joana Maria"
+            }
+        ],
+        "dataArquivado": 1549072800000
     }
 ]

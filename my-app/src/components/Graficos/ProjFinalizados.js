@@ -5,7 +5,7 @@ import './ProjFinalizados.css';
 
 // Dados que serão usados para simular o funcionamento da aplicação com uma boa quantidade
 // de informações. O banco de dados atualmente não apresenta muitos dados, por isso optou-se
-// por simular o funcionamento do mesmo.
+// por essa alternativa.
 import exemploDados from './exemploDados.json';
 let dadosExemplo = exemploDados;
 
@@ -15,7 +15,7 @@ let dadosExemplo = exemploDados;
 function ProjFinalizados({ props }) {
     // Descrição de funcionamento desse componente:
     //
-    // Projeto finalizado tem essa propriedade com esse valor:
+    // Projeto finalizado tem a propriedade arquivado com esse valor:
     //      arquivado = true
     // Filtrar pelos campos: mês, ano, pessoa
     // Se for escolhido o mês: {
@@ -27,12 +27,231 @@ function ProjFinalizados({ props }) {
     //      são mostrados os dados de 5 anos a partir do ano atual.  
     // }
     const [pessoasEncontradas, setPessoasEncontradas] = useState([]);
-
     const [opcaoInputRadio, setOpcaoInputRadio] = useState('');
-    const [opcaoAnoSelect, setOpcaoAnoSelect] = useState('');
-    const [opcaoPessoaSelect, setOpcaoPessoaSelect] = useState('');
+    const [opcaoAnoSelect, setOpcaoAnoSelect] = useState('Todos os anos');
+    const [opcaoPessoaSelect, setOpcaoPessoaSelect] = useState('Todas as pessoas');
+    const [dadosFiltrados, setDadosFiltrados] = useState([]);
+    const [dadosParaMostrar, setDadosParaMostrar] = useState({});
 
-    
+
+    // Dados filtrados
+    // Salva em uma variável de estado os projetos que foram finalizados (arquivados)
+    useEffect(() => {
+        function filtrarDados() {
+            let dadosFiltrados = [];
+            dadosExemplo.map(dado => {
+                if (dado.arquivado) { // arquivado = finalizado
+                    dadosFiltrados.push(dado);
+                }
+                return null;
+            });
+            setDadosFiltrados(dadosFiltrados);
+        }
+
+        filtrarDados();
+    }, [props]);
+
+
+    // defineDadosASeremMostrados()
+    //
+    // Essa função é responsável por salvar em uma variável de estado os valores que
+    // serão usados para plotar o gráfico.
+    useEffect(() => {
+        function defineDadosASeremMostrados() {
+            let objMostrar = {
+                    x: [],
+                    y: []
+                },
+                dataArquivado,
+                indice,
+                projetista;
+                
+            if (opcaoInputRadio === 'mes') {
+                // Popular os dados de x com meses e y com 0:
+                for(var cont = 0; cont < 12; cont++) {
+                    objMostrar.x.push(cont + 1);
+                    objMostrar.y.push(0);
+                }
+                if (opcaoPessoaSelect === 'Todas as pessoas') {
+                    if (opcaoAnoSelect === 'Todos os anos') {
+                        dadosFiltrados.map(dado => {
+                            dataArquivado = new Date(dado.dataArquivado);
+                            indice = dataArquivado.getMonth();
+                            objMostrar.y[indice]++; // Incrementa o valor salvo na posição do mês
+                            return null;
+                        })
+                    } else {
+                        dadosFiltrados.map(dado => {
+                            dataArquivado = new Date(dado.dataArquivado);
+                            if (String(dataArquivado.getFullYear()) === String(opcaoAnoSelect)) {
+                                indice = dataArquivado.getMonth();
+                                objMostrar.y[indice]++; // Incrementa o valor salvo na posição do mês
+                            }
+                            return null;
+                        });
+                    }
+                } else {
+                    if (opcaoAnoSelect === 'Todos os anos') {
+                        dadosFiltrados.map(dado => {
+                            dado.infoProjetos.map(infoProjeto => {
+                                if (String(infoProjeto.projetistaDesenho) === String(opcaoPessoaSelect)) {
+                                    if (String(projetista) !== String(opcaoPessoaSelect)) {
+                                        dataArquivado = new Date(dado.dataArquivado)
+                                        indice = dataArquivado.getMonth();
+                                        objMostrar.y[indice]++;
+                                        projetista = opcaoPessoaSelect;
+                                    }
+                                }
+                                return null;
+                            });
+                            projetista = '';
+                            return null;
+                        });
+                    } else {
+                        dadosFiltrados.map(dado => {
+                            dataArquivado = new Date(dado.dataArquivado);
+                            if (String(dataArquivado.getFullYear()) === String(opcaoAnoSelect)) {
+                                dado.infoProjetos.map(infoProjeto => {
+                                    if (String(infoProjeto.projetistaDesenho) === String(opcaoPessoaSelect)) {
+                                        if (String(projetista) !== String(opcaoPessoaSelect)) {
+                                            dataArquivado = new Date(dado.dataArquivado)
+                                            indice = dataArquivado.getMonth();
+                                            objMostrar.y[indice]++;
+                                            projetista = opcaoPessoaSelect;
+                                        }
+                                    }
+                                    return null;
+                                });
+                            }
+                            projetista = '';
+                            return null;
+                        });
+                    }
+                }
+            } else if (opcaoInputRadio === 'ano') {
+                let anoAtual = new Date(Date.now()).getFullYear();
+                // Preenche os dados do eixo X que serão mostrados
+                for (let cont = 0; cont <= 4; cont++) {
+                    objMostrar.x.push(anoAtual - cont);
+                    objMostrar.y.push(0);
+                }
+                if (opcaoPessoaSelect === 'Todas as pessoas') {
+                    if (opcaoAnoSelect === 'Todos os anos') {
+                        dadosFiltrados.map(dado => {
+                            dataArquivado = new Date(dado.dataArquivado);
+                            indice = Number(anoAtual - dataArquivado.getFullYear());
+                            objMostrar.y[indice]++; // Incrementa o valor salvo na posição do ano
+                            return null;
+                        });
+                        objMostrar.x = objMostrar.x.reverse();
+                        objMostrar.y = objMostrar.y.reverse();
+                    }
+                }
+            }
+            console.log('objMostrar', objMostrar)
+            setDadosParaMostrar(objMostrar);
+        }
+
+        defineDadosASeremMostrados();
+    }, [opcaoInputRadio, opcaoAnoSelect, opcaoPessoaSelect, dadosFiltrados]);
+
+
+    // Hook usado para plotar os dados com base nas informações pertinentes obtidas do
+    // banco de dados.
+    const [chartInstance2, setChartInstance2] = useState('');
+    useEffect(() => {
+        let textTitle,
+            labelStringValueX;
+        if (opcaoInputRadio === 'mes') {
+            textTitle = `Filtro: Mês. Ano: ${opcaoAnoSelect}. Pessoa: ${opcaoPessoaSelect}`;
+            labelStringValueX = 'Mês';
+        } else if((opcaoInputRadio === 'ano')) {
+            textTitle = `Filtro: Ano. Pessoa: ${opcaoPessoaSelect}`;
+            labelStringValueX = 'Ano';
+        } else {
+            textTitle = '';
+            labelStringValueX = '';
+        }
+
+        let chartConfig = {
+            type: 'bar',
+            data: {
+                labels: dadosParaMostrar.x,
+                datasets: [{
+                    label: 'Quantidade de projetos finalizados',
+                    backgroundColor: 'rgb(134, 57, 23)',
+                    data: dadosParaMostrar.y
+                }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: textTitle
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }],
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: labelStringValueX
+                        }
+                    }]
+                }
+            }
+        }
+
+        if (document.getElementById('ProjFinalizadosCanvas')) {
+            if (chartInstance2) chartInstance2.destroy();
+            const newChartInstance2 = new Chartjs(document.getElementById('ProjFinalizadosCanvas').getContext('2d'), chartConfig);
+            setChartInstance2(newChartInstance2);
+        }
+    // eslint-disable-next-line
+    }, [opcaoAnoSelect, opcaoPessoaSelect, opcaoInputRadio, dadosParaMostrar]);
+
+
+    // setOpcaoDeAnos()
+    //
+    // Essa função determina quais possibilidades de anos que serão mostradas para o usuário
+    // com base no conjunto de dados do banco de dados.
+    useEffect(() => {
+        function setOpcaoDeAnos() {
+            let tagSelect = document.getElementById('anoQueSeraMostradoProjFinalizados2'),
+                anoEncontrado = [],
+                anoAtual, 
+                anoRepetido = false;
+
+            tagSelect.innerHTML = '<option value="Todos os anos">Todos os anos</option>';
+            dadosFiltrados.map(data => {
+                anoAtual = new Date(data.dataArquivado);
+                anoAtual = anoAtual.getFullYear();
+                anoRepetido = false;
+                for(let aux = 0, len = anoEncontrado.length; aux < len; aux++) {
+                    if (anoAtual === anoEncontrado[aux]) {
+                        anoRepetido = true;
+                    }
+                }
+                if (!anoRepetido) {
+                    anoEncontrado.push(anoAtual);
+                    anoEncontrado = anoEncontrado.sort();   
+                }
+                return null;
+            });
+            anoEncontrado.reverse().map(ano => {
+                tagSelect.innerHTML += `<option value=${ano}>${ano}</option>`;
+                return null;
+            });
+        }
+
+        setOpcaoDeAnos();
+    // eslint-disable-next-line
+    }, [dadosFiltrados]);
+
+
     // pessoasEncontradas()
     //
     // Essa função é responsável por preencher um array com informações dos nomes
@@ -42,7 +261,7 @@ function ProjFinalizados({ props }) {
             let arrayPessoa = [],
                 pessoaRepetida = false,
                 aux;
-            dadosExemplo.map(dado => {
+            dadosFiltrados.map(dado => {
                 dado.infoProjetos.map(pessoa => {
                     for(aux = 0; aux < arrayPessoa.length; aux++) {
                         if (String(pessoa.projetistaDesenho) === String(arrayPessoa[aux])) {
@@ -65,80 +284,6 @@ function ProjFinalizados({ props }) {
         }
     // eslint-disable-next-line
     }, [props]);
-
-
-    const [chartInstance2, setChartInstance2] = useState(null);
-    useEffect(() => {
-        let chartConfig = {
-            type: 'bar',
-            data: {
-                labels: 0,//dataEncontrada.x,
-                datasets: [{
-                    label: 'Quantidade de projetos cadastrados',
-                    backgroundColor: 'rgb(24, 57, 190)',
-                    data: 0//dataEncontrada.y
-                }]
-            },
-            options: {
-                title: {
-                    display: true,
-                    text: 'Provisório'
-                },
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero:true
-                        }
-                    }]
-                }
-            }
-        }
-
-        if (document.getElementById('ProjFinalizadosCanvas')) {
-            if (chartInstance2) chartInstance2.destroy();
-            const newChartInstance2 = new Chartjs(document.getElementById('ProjFinalizadosCanvas').getContext('2d'), chartConfig);
-            setChartInstance2(newChartInstance2);
-        }
-    // eslint-disable-next-line
-    }, [opcaoAnoSelect, opcaoInputRadio]);
-
-
-    // setOpcaoDeAnos()
-    //
-    // Essa função determina quais possibilidades de anos que serão mostradas para o usuário
-    // com base no conjunto de dados do banco de dados.
-    useEffect(() => {
-        function setOpcaoDeAnos() {
-            let tagSelect = document.getElementById('anoQueSeraMostradoProjFinalizados2'),
-                anoEncontrado = [],
-                anoAtual, 
-                anoRepetido = false;
-
-            tagSelect.innerHTML = '<option value="Todos os anos">Todos os anos</option>';
-            dadosExemplo.map(data => {
-                anoAtual = new Date(data.createdAt);
-                anoAtual = anoAtual.getFullYear();
-                anoRepetido = false;
-                for(let aux = 0; aux < anoEncontrado.length; aux++) {
-                    if (anoAtual === anoEncontrado[aux]) {
-                        anoRepetido = true;
-                    }
-                }
-                if (!anoRepetido) {
-                    anoEncontrado.push(anoAtual);
-                    anoEncontrado = anoEncontrado.sort();   
-                }
-                return undefined;
-            });
-            anoEncontrado.reverse().map(ano => {
-                tagSelect.innerHTML += `<option value=${ano}>${ano}</option>`;
-                return null;
-            });
-        }
-
-        setOpcaoDeAnos();
-    // eslint-disable-next-line
-    }, [dadosExemplo]);
 
 
     // setOpcaoDePessoas()
@@ -176,25 +321,12 @@ function ProjFinalizados({ props }) {
 
     return(
         <div id="ProjFinalizados">
-            <h3 className="ProjFinalizados">Quantidade de projetos finalizados</h3>
-            <input 
-                type="radio" 
-                id="pessoa2"
-                className="pessoa2" 
-                value="pessoa2"
-                onClick={() => {setOpcaoInputRadio('pessoa')}} />
-            <label htmlFor="pessoa2">Pessoa</label>
-
-            <div className="selectTagPessoa">
-                <select id="pessoaQueSeraMostradaProjFinalizados2" onChange={handlePessoaSelectOption}>
-                    <option value="Todos as pessoas">Todos as pessoas</option>
-                </select>
-            </div>
+            <h3 className="ProjFinalizados">Projetos finalizados</h3>
 
             <input 
                 type="radio" 
                 id="mes2"
-                className="mes2" 
+                name="ProjFinalizados" 
                 value="mes2"
                 onClick={() => {setOpcaoInputRadio('mes')}} />
             <label htmlFor="mes2">Mês</label>
@@ -208,10 +340,16 @@ function ProjFinalizados({ props }) {
             <input 
                 type="radio" 
                 id="ano2"
-                className="ano2" 
+                name="ProjFinalizados" 
                 value="ano2"
                 onClick={() => {setOpcaoInputRadio('ano')}} />
             <label htmlFor="ano2">Ano</label>
+
+            <div className="selectTagPessoa">
+                <select id="pessoaQueSeraMostradaProjFinalizados2" onChange={handlePessoaSelectOption}>
+                    <option value="Todas as pessoas">Todas as pessoas</option>
+                </select>
+            </div>
 
             <div className="plot1">
                 <canvas id="ProjFinalizadosCanvas" />

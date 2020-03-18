@@ -1,6 +1,81 @@
+div#ProjCadastrados {
+    border: 1px solid #bbb;
+    border-radius: 15px;
+    padding-bottom: 20px;
+}
+
+div#ProjCadastrados div.grid-container {
+    display: grid;
+    grid-template-areas: 'nav nav nav nav plot plot plot';
+    align-items: center;
+}
+
+div#ProjCadastrados h3.ProjCadastrados {
+    margin: 20px auto;
+}
+
+div#ProjCadastrados div.grid-container nav {
+    border: 1px solid #777;
+    background-color: #fff;
+    border-radius: 8px 0 0 0;
+    height: 100%;
+    width: 95%;
+    margin: 0 auto;
+    grid-area: nav;
+}
+
+div#ProjCadastrados div.grid-container nav h4.nav-title {
+    background-color: #333;
+    border: 2px solid #333;
+    border-radius: 8px 0 0 0;
+    color: #ddd;
+    padding: 5px;
+}
+
+div#ProjCadastrados div.grid-container nav div.option-box input {
+    margin: 0 5px;
+}
+
+div#ProjCadastrados div.grid-container nav div.option-box label {
+    margin: 10px 7px;
+}
+
+div#ProjCadastrados div.grid-container div.plot1 {
+    grid-area: plot;
+}
+
 div#ProjCadastrados div.plot1 {
     border: 1px solid #777;
-    border-radius: 10px 0;
-    width: 600px;
-    height: 300px;
+    border-radius: 0 10px;
+    width: 720px;
+}
+
+
+
+
+
+div#ProjCadastrados:first-of-type {
+    display: grid;
+    margin-bottom: 5px;
+}
+
+div#ProjCadastrados input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+  
+    border: 2px solid #999;
+    transition: 0.2s all linear;
+    margin-right: 5px;
+  
+    position: relative;
+    top: 4px;
+}
+
+div#ProjCadastrados input:checked {
+    border: 6px solid black;
 }
